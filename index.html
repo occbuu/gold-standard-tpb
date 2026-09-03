@@ -19,13 +19,52 @@
         --shadow:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.3);}
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);overflow:hidden;
      font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-.wrap{max-width:940px;margin:0 auto;padding:20px 18px 80px}
-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-h1{font-size:19px;margin:0;font-weight:650;letter-spacing:-.01em}
-.sub{color:var(--muted);font-size:13px;margin:2px 0 18px}
+.app{display:flex;flex-direction:column;height:100vh;min-height:0}
+.top{flex:none;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;
+     padding:12px 18px 8px;border-bottom:1px solid var(--line);background:var(--bg)}
+.top .titles{min-width:0}
+h1{font-size:18px;margin:0;font-weight:650;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:12.5px;margin:2px 0 0}
+.work{flex:1;min-height:0;display:grid;grid-template-columns:minmax(400px,1.05fr) minmax(360px,.95fr);
+      gap:14px;padding:12px 18px 14px}
+.col{min-height:0;overflow:auto}
+.col-guide{overflow:hidden}
+.col-main{display:flex;flex-direction:column;overflow:auto}
+body.is-task .col-main{overflow:hidden}
+.col-main>.card, .col-main>#setup, .col-main>#task, .col-main>#done{min-height:0}
+.col-main>#task{flex:1;display:flex;flex-direction:column;min-height:0}
+.task-card{flex:1;display:flex;flex-direction:column;min-height:0;margin:0;padding:14px 16px}
+.task-head{flex:none}
+.review{flex:1;min-height:110px;max-height:none;margin:8px 0 12px}
+.task-foot{flex:none}
+.guide-card{margin:0;padding:0;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.guide-head{flex:none;padding:12px 16px 10px;border-bottom:1px solid var(--line);background:var(--surface)}
+.guide-head h2{font-size:14px;margin:0;font-weight:650}
+.gnav{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.gnav a{font-size:11.5px;color:var(--accent);text-decoration:none;padding:2px 8px;
+        border:1px solid var(--line);border-radius:99px;background:var(--bg)}
+.gnav a:hover{border-color:var(--accent)}
+.guide-body{flex:1;overflow:auto;padding:4px 16px 18px;font-size:13.5px}
+.guide-body .diff{grid-template-columns:1fr}
+#sec-ask, #sec-cons { scroll-margin-top: 8px }
+#sec-cons{overflow-x:auto}
+.guide-body table{font-size:12.5px}
+.foot{flex:none;text-align:center;padding:0 18px 10px}
+body.is-task .foot{display:none}
 .spacer{flex:1}
+@media (max-width:900px){
+  html,body{height:auto;overflow:auto}
+  .app{height:auto}
+  .work{grid-template-columns:1fr;height:auto}
+  .col-guide{overflow:visible;max-height:none}
+  .guide-card{height:auto}
+  .guide-body{overflow:visible}
+  .col-main>#task,.task-card{height:auto}
+  .review{max-height:40vh}
+}
 button,select,input{font:inherit;color:inherit}
 .btn{background:var(--surface);border:1px solid var(--line);border-radius:8px;
      padding:7px 12px;cursor:pointer;box-shadow:var(--shadow);transition:.12s}
@@ -34,7 +73,7 @@ button,select,input{font:inherit;color:inherit}
 .btn.primary:hover{filter:brightness(1.08);color:#fff}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-      box-shadow:var(--shadow);padding:18px;margin-bottom:16px}
+      box-shadow:var(--shadow);padding:18px}
 label.f{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.05em;
         color:var(--muted);margin-bottom:5px;font-weight:600}
 input[type=text],select{width:100%;padding:8px 10px;border:1px solid var(--line);
@@ -47,9 +86,9 @@ input.bad{border-color:var(--warn)}
 .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);gap:8px;flex-wrap:wrap}
 .review{font-size:16px;line-height:1.65;white-space:pre-wrap;word-break:break-word;
         background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--accent);
-        border-radius:8px;padding:15px 16px;margin:4px 0 18px;max-height:44vh;overflow:auto}
+        border-radius:8px;padding:15px 16px;overflow:auto}
 .cons{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:9px}
-.con{display:flex;align-items:flex-start;gap:9px;padding:11px 12px;cursor:pointer;
+.con{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;cursor:pointer;
      border:1.5px solid var(--line);border-radius:9px;background:var(--surface);
      transition:.12s;user-select:none}
 .con:hover{border-color:var(--accent)}
@@ -66,13 +105,7 @@ input.bad{border-color:var(--warn)}
 .flag{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:8px;
       border:1.5px solid var(--line);cursor:pointer;font-size:13px;background:var(--surface)}
 .flag.on{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
-.nav{display:flex;gap:9px;align-items:center;margin-top:16px;flex-wrap:wrap}
-details{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);
-        padding:0 16px;margin-bottom:16px;box-shadow:var(--shadow)}
-details[open]{padding-bottom:14px}
-summary{cursor:pointer;padding:13px 0;font-weight:620;font-size:14px}
-details.quick{margin:0 0 14px;box-shadow:none}
-details.quick summary{padding:10px 0;font-size:13px;color:var(--accent)}
+.nav{display:flex;gap:9px;align-items:center;margin-top:12px;flex-wrap:wrap}
 table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
 th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
@@ -87,7 +120,7 @@ code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding
 .pill{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:99px;
       background:var(--accent-soft);color:var(--accent);font-weight:620}
 .err{color:var(--warn);font-size:13px;margin-top:8px}
-h3.sec{font-size:14px;margin:18px 0 8px;font-weight:650}
+h3.sec{font-size:14px;margin:18px 0 8px;font-weight:650;scroll-margin-top:8px}
 .callout{background:var(--accent-soft);border-radius:8px;padding:11px 13px;font-size:13.5px;margin:10px 0}
 .ask{margin:0;padding-left:20px;font-size:13.5px}
 .ask li{margin:5px 0}
@@ -115,105 +148,113 @@ ul.compact li{margin:4px 0}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
 
-<header>
-  <h1 data-i="title">Review annotation for TPB constructs</h1>
+<header class="top">
+  <div class="titles">
+    <h1 data-i="title">Review annotation for TPB constructs</h1>
+    <p class="sub" data-i="sub">Open, reproducible measurement of psychological constructs in guest reviews.</p>
+  </div>
   <span class="spacer"></span>
   <button class="btn" id="lang">Tiếng Việt</button>
 </header>
-<p class="sub" data-i="sub">Open, reproducible measurement of psychological constructs in guest reviews.</p>
 
-<!-- ============================ SETUP ============================ -->
-<div id="setup">
-  <div class="card">
-    <ol class="steps" id="howsteps"></ol>
-    <div class="row">
-      <div>
-        <label class="f" data-i="coder">Your coder ID</label>
-        <input type="text" id="coder" placeholder="e.g. hao_nguyen or coder_03" autocomplete="off" maxlength="40" spellcheck="false">
+<div class="work">
+  <section class="col col-main">
+    <div id="setup">
+      <div class="card">
+        <ol class="steps" id="howsteps"></ol>
+        <div class="row">
+          <div>
+            <label class="f" data-i="coder">Your coder ID</label>
+            <input type="text" id="coder" placeholder="e.g. hao_nguyen or coder_03" autocomplete="off" maxlength="40" spellcheck="false">
+          </div>
+          <div>
+            <label class="f" data-i="batch">Batch</label>
+            <select id="batch"></select>
+          </div>
+        </div>
+        <p class="note" data-i="setupnote">Everyone codes <b>batch_00</b> first — it measures agreement between coders. After that, take the batch you were assigned.</p>
+        <label class="ack" for="ack">
+          <input type="checkbox" id="ack">
+          <span data-i="ack">I have read the codebook on the right</span>
+        </label>
+        <div class="nav">
+          <button class="btn primary" id="start" data-i="start">Start coding</button>
+          <button class="btn" id="resume" data-i="resume">Resume saved work</button>
+          <button class="btn" id="importbtn" data-i="import">Import a .json file</button>
+          <input type="file" id="importfile" accept=".json,application/json" class="hide">
+        </div>
+        <div class="err hide" id="err"></div>
       </div>
-      <div>
-        <label class="f" data-i="batch">Batch</label>
-        <select id="batch"></select>
+    </div>
+
+    <div id="task" class="hide">
+      <div class="card task-card">
+        <div class="task-head">
+          <div class="meta">
+            <span><span class="pill" id="who"></span></span>
+            <span id="counter"></span>
+          </div>
+          <div class="bar"><i id="prog" style="width:0"></i></div>
+        </div>
+
+        <div class="review" id="text"></div>
+
+        <div class="task-foot">
+          <div class="cons" id="cons"></div>
+          <p class="pick" id="pick"></p>
+          <div class="flagbox">
+            <div class="flag" id="flag"><span class="kbd">0</span> <span data-i="flagtxt">Problem: not English, empty, or an automated message</span></div>
+          </div>
+          <div class="banner hide" id="warn"></div>
+          <div class="nav">
+            <button class="btn" id="prev" data-i="prev">← Back</button>
+            <button class="btn primary" id="next" data-i="next">Save and next →</button>
+            <span class="spacer"></span>
+            <button class="btn" id="export" data-i="export">Download my work (.json)</button>
+          </div>
+          <p class="note" data-i="autosave">Your work is saved in this browser automatically. Download the file when you finish and send it to the study author.</p>
+        </div>
       </div>
     </div>
-    <p class="note" data-i="setupnote">Everyone codes <b>batch_00</b> first — it measures agreement between coders. After that, take the batch you were assigned.</p>
-    <label class="ack" for="ack">
-      <input type="checkbox" id="ack" disabled>
-      <span data-i="ack">I have opened and read the codebook below</span>
-    </label>
-    <div class="nav">
-      <button class="btn primary" id="start" data-i="start">Start coding</button>
-      <button class="btn" id="resume" data-i="resume">Resume saved work</button>
-      <button class="btn" id="importbtn" data-i="import">Import a .json file</button>
-      <input type="file" id="importfile" accept=".json,application/json" class="hide">
+
+    <div id="done" class="hide">
+      <div class="card done">
+        <div class="big">✓</div>
+        <h2 data-i="donetitle" style="margin:8px 0 4px">Batch complete</h2>
+        <p class="note" id="donesub"></p>
+        <div class="nav" style="justify-content:center">
+          <button class="btn primary" id="export2" data-i="export">Download my work (.json)</button>
+          <button class="btn" id="another" data-i="another">Code another batch</button>
+        </div>
+      </div>
     </div>
-    <div class="err hide" id="err"></div>
-  </div>
+  </section>
+
+  <aside class="col col-guide" id="guide">
+    <div class="card guide-card" id="cb">
+      <div class="guide-head">
+        <h2 data-i="cbtitle">Codebook — keep this open while you code</h2>
+        <nav class="gnav" id="gnav"></nav>
+      </div>
+      <div class="guide-body" id="cbscroll">
+        <p data-i="cbintro">Tick a construct when the guest <b>actually expresses it about this stay</b>. Do not infer what they probably felt. If the wording is ambiguous, do not tick.</p>
+        <div class="callout" id="sec-ask"></div>
+        <div id="sec-cons">
+        <table>
+          <thead><tr><th data-i="cbc">Construct</th><th data-i="cbt">Tick when the review…</th><th data-i="cbe">Examples</th></tr></thead>
+          <tbody id="cbrows"></tbody>
+        </table>
+        </div>
+        <div id="cbguide"></div>
+        <p class="note" data-i="cbkeys"><b>Keyboard.</b> <span class="kbd">1</span>–<span class="kbd">5</span> toggle a construct, <span class="kbd">0</span> flags a problem, <span class="kbd">Enter</span> saves and moves on, <span class="kbd">←</span> goes back.</p>
+      </div>
+    </div>
+  </aside>
 </div>
 
-<!-- ============================ CODEBOOK ============================ -->
-<details id="cb">
-  <summary data-i="cbtitle">Codebook — read once before you start (5 min)</summary>
-  <p data-i="cbintro">Tick a construct when the guest <b>actually expresses it about this stay</b>. Do not infer what they probably felt. If the wording is ambiguous, do not tick.</p>
-  <div class="callout" id="cbask"></div>
-  <table>
-    <thead><tr><th data-i="cbc">Construct</th><th data-i="cbt">Tick when the review…</th><th data-i="cbe">Examples</th></tr></thead>
-    <tbody id="cbrows"></tbody>
-  </table>
-  <div id="cbguide"></div>
-  <p class="note" data-i="cbkeys"><b>Keyboard.</b> <span class="kbd">1</span>–<span class="kbd">5</span> toggle a construct, <span class="kbd">0</span> flags a problem, <span class="kbd">Enter</span> saves and moves on, <span class="kbd">←</span> goes back.</p>
-</details>
-
-<!-- ============================ TASK ============================ -->
-<div id="task" class="hide">
-  <div class="card">
-    <div class="meta">
-      <span><span class="pill" id="who"></span></span>
-      <span id="counter"></span>
-    </div>
-    <div class="bar"><i id="prog" style="width:0"></i></div>
-
-    <details class="quick" id="quick">
-      <summary data-i="quicktitle">Quick guide — open if you are unsure</summary>
-      <div id="quickbody"></div>
-    </details>
-
-    <div class="review" id="text"></div>
-
-    <div class="cons" id="cons"></div>
-    <p class="pick" id="pick"></p>
-
-    <div class="flagbox">
-      <div class="flag" id="flag"><span class="kbd">0</span> <span data-i="flagtxt">Problem: not English, empty, or an automated message</span></div>
-    </div>
-    <div class="banner hide" id="warn"></div>
-
-    <div class="nav">
-      <button class="btn" id="prev" data-i="prev">← Back</button>
-      <button class="btn primary" id="next" data-i="next">Save and next →</button>
-      <span class="spacer"></span>
-      <button class="btn" id="export" data-i="export">Download my work (.json)</button>
-    </div>
-    <p class="note" data-i="autosave">Your work is saved in this browser automatically. Download the file when you finish and send it to the study author.</p>
-  </div>
-</div>
-
-<!-- ============================ DONE ============================ -->
-<div id="done" class="hide">
-  <div class="card done">
-    <div class="big">✓</div>
-    <h2 data-i="donetitle" style="margin:8px 0 4px">Batch complete</h2>
-    <p class="note" id="donesub"></p>
-    <div class="nav" style="justify-content:center">
-      <button class="btn primary" id="export2" data-i="export">Download my work (.json)</button>
-      <button class="btn" id="another" data-i="another">Code another batch</button>
-    </div>
-  </div>
-</div>
-
-<p class="note" style="text-align:center;margin-top:26px">
+<p class="note foot">
   <span data-i="foot">Reviews come from the public Inside Airbnb dataset. No personal data is collected; annotations stay in your browser until you download them.</span>
 </p>
 </div>
@@ -229,10 +270,10 @@ const I18N = {
   sub:"Open, reproducible measurement of psychological constructs in guest reviews.",
   coder:"Your coder ID", batch:"Batch",
   setupnote:"Everyone codes <b>batch_00</b> first — it measures agreement between coders. After that, take the batch you were assigned.",
-  howsteps:["Read the codebook below (about 5 minutes). Accuracy matters more than speed.","Use a stable ID (e.g. <code>hao_nguyen</code> or <code>coder_03</code>) so we can match your files.","Tick only what the guest <b>wrote</b>. If you are inferring, do not tick. Non-English or automated text: use the problem flag only."],
+  howsteps:["Read the codebook on the right (about 5 minutes). Accuracy matters more than speed.","Use a stable ID (e.g. <code>hao_nguyen</code> or <code>coder_03</code>) so we can match your files.","Tick only what the guest <b>wrote</b>. If you are inferring, do not tick. Non-English or automated text: use the problem flag only."],
   start:"Start coding", resume:"Resume saved work", import:"Import a .json file",
-  ack:"I have opened and read the codebook below",
-  cbtitle:"Codebook — read once before you start (5 min)",
+  ack:"I have read the codebook on the right",
+  cbtitle:"Codebook — visible while you code",
   cbintro:"Tick a construct when the guest <b>actually expresses it about this stay</b>. Do not infer what they probably felt. If the wording is ambiguous, do not tick.",
   cbask:"<b>Five questions, in order.</b> For each review, ask only these. A “yes” requires words on the page, not a hunch.",
   asks:["Did they evaluate this stay as good or bad (beautiful, grim, comfortable, disappointing)? → <b>ATT</b>","Did they mention other people’s views, or recommend the place to others? → <b>SN</b>","Did they say booking, arriving, communicating or managing the stay was easy or hard? → <b>PBC</b>","Did they compare the stay with what was expected, described or promised? → <b>SAT</b>","Did they say they will, or will not, stay here again? → <b>BI</b>"],
@@ -273,6 +314,7 @@ const I18N = {
   rules:"(1) Judge only this review, not the property. (2) Negative phrasing still counts. (3) Several constructs can be present at once. (4) Tick nothing if none applies — empty is a valid code. (5) Use the problem flag for non-English text, empty reviews, or automated cancellation/system messages; then leave all constructs off.",
   flagtxt:"Problem: not English, empty, or an automated message",
   flaghelp:"Use this for Portuguese, Spanish, French, Dutch, Italian, etc.; blank text; or host-cancelled / automated postings. Flagged reviews are ignored in scoring.",
+  gnav:[["#sec-ask","Questions"],["#sec-cons","Constructs"],["#sec-diff","Pairs"],["#sec-no","Do not tick"],["#sec-eg","Examples"]],
   quicktitle:"Quick guide — open if you are unsure",
   prev:"← Back", next:"Save and next →", export:"Download my work (.json)",
   autosave:"Your work is saved in this browser automatically. Download the file when you finish and send it to the study author.",
@@ -281,7 +323,7 @@ const I18N = {
   langbtn:"Tiếng Việt", of:"of",
   need:"Enter a coder ID first.",
   coderbad:"Use 2–40 characters: start with a letter or number; then letters, numbers, dot, _ or -.",
-  ackneed:"Open the codebook, then tick the box to confirm you have read it.",
+  ackneed:"Tick the box to confirm you have read the codebook on the right.",
   noload:"Could not load the batch file.",
   nosaved:"No saved work found in this browser for that coder ID and batch.",
   importbad:"This file is not a valid annotation export (needs coder_id, batch_id, and an annotations array).",
@@ -296,10 +338,10 @@ const I18N = {
   sub:"Đo lường các cấu trúc tâm lý trong đánh giá của khách, minh bạch và tái lập được.",
   coder:"Mã người gán nhãn của bạn", batch:"Đợt",
   setupnote:"Mọi người làm <b>batch_00</b> trước — đợt này dùng để đo mức đồng thuận giữa những người gán nhãn. Sau đó làm đợt được phân công.",
-  howsteps:["Đọc sổ tay mã hóa bên dưới (khoảng 5 phút). Chính xác quan trọng hơn tốc độ.","Dùng một mã ổn định (ví dụ <code>hao_nguyen</code> hoặc <code>coder_03</code>) để ghép các file của bạn.","Chỉ tích điều khách <b>viết ra</b>. Nếu bạn đang suy diễn thì đừng tích. Không phải tiếng Anh hoặc tin nhắn tự động: chỉ bật cờ lỗi."],
+  howsteps:["Đọc sổ tay mã hóa bên phải (khoảng 5 phút). Chính xác quan trọng hơn tốc độ.","Dùng một mã ổn định (ví dụ <code>hao_nguyen</code> hoặc <code>coder_03</code>) để ghép các file của bạn.","Chỉ tích điều khách <b>viết ra</b>. Nếu bạn đang suy diễn thì đừng tích. Không phải tiếng Anh hoặc tin nhắn tự động: chỉ bật cờ lỗi."],
   start:"Bắt đầu gán nhãn", resume:"Tiếp tục phần đã lưu", import:"Nhập file .json",
-  ack:"Tôi đã mở và đọc sổ tay mã hóa bên dưới",
-  cbtitle:"Sổ tay mã hóa — đọc một lần trước khi bắt đầu (5 phút)",
+  ack:"Tôi đã đọc sổ tay mã hóa bên phải",
+  cbtitle:"Sổ tay mã hóa — luôn mở khi gán nhãn",
   cbintro:"Tích một cấu trúc khi khách <b>thực sự nói ra điều đó về kỳ nghỉ này</b>. Đừng suy diễn cảm xúc của họ. Nếu câu chữ mơ hồ thì không tích.",
   cbask:"<b>Năm câu hỏi, theo thứ tự.</b> Với mỗi review, chỉ hỏi những câu này. “Có” phải dựa trên chữ trong review, không dựa trên cảm giác.",
   asks:["Họ có đánh giá kỳ nghỉ này là tốt hay tệ (đẹp, tồi, thoải mái, thất vọng)? → <b>ATT</b>","Họ có nhắc ý kiến người khác, hoặc giới thiệu chỗ này cho người khác? → <b>SN</b>","Họ có nói việc đặt phòng, đến nơi, liên lạc hay xoay xở là dễ hay khó? → <b>PBC</b>","Họ có so sánh kỳ nghỉ với điều đã kỳ vọng, được mô tả hoặc được hứa? → <b>SAT</b>","Họ có nói sẽ, hoặc sẽ không, ở đây lần nữa? → <b>BI</b>"],
@@ -340,6 +382,7 @@ const I18N = {
   rules:"(1) Chỉ xét review này, không xét chỗ ở. (2) Câu mang nghĩa tiêu cực vẫn tính. (3) Nhiều cấu trúc có thể cùng xuất hiện. (4) Không tích gì nếu không có cấu trúc nào — để trống là một mã hợp lệ. (5) Dùng cờ lỗi cho văn bản không phải tiếng Anh, review rỗng, hoặc tin nhắn hủy/tự động; khi đó để tất cả cấu trúc ở mức tắt.",
   flagtxt:"Có vấn đề: không phải tiếng Anh, rỗng, hoặc tin nhắn tự động",
   flaghelp:"Dùng cho tiếng Bồ Đào Nha, Tây Ban Nha, Pháp, Hà Lan, Ý, v.v.; review trống; hoặc tin hủy phòng / tin hệ thống. Review bị gắn cờ sẽ bị bỏ khi chấm điểm.",
+  gnav:[["#sec-ask","Câu hỏi"],["#sec-cons","Cấu trúc"],["#sec-diff","Cặp nhầm"],["#sec-no","Không tích"],["#sec-eg","Ví dụ"]],
   quicktitle:"Hướng dẫn nhanh — mở khi chưa chắc",
   prev:"← Quay lại", next:"Lưu và tiếp →", export:"Tải kết quả của tôi (.json)",
   autosave:"Phần làm của bạn được lưu tự động trong trình duyệt. Khi xong hãy tải file về và gửi cho tác giả nghiên cứu.",
@@ -348,7 +391,7 @@ const I18N = {
   langbtn:"English", of:"trên",
   need:"Hãy nhập mã người gán nhãn trước.",
   coderbad:"Dùng 2–40 ký tự: bắt đầu bằng chữ hoặc số; sau đó là chữ, số, dấu chấm, _ hoặc -.",
-  ackneed:"Hãy mở sổ tay mã hóa, rồi tích ô xác nhận bạn đã đọc.",
+  ackneed:"Hãy tích ô xác nhận bạn đã đọc sổ tay bên phải.",
   noload:"Không tải được file của đợt này.",
   nosaved:"Không tìm thấy phần đã lưu trong trình duyệt này cho mã và đợt đó.",
   importbad:"File này không phải bản xuất nhãn hợp lệ (cần coder_id, batch_id và mảng annotations).",
@@ -377,7 +420,6 @@ const BOOK = {
 let lang = localStorage.getItem("tpb_lang") || "en";
 let S = { coder:"", batch:"", items:[], ann:{}, i:0, started:null, t0:0 };
 let MAN = null;
-let cbOpened = false;
 let skipGuard = false;
 
 const $ = s => document.querySelector(s);
@@ -398,7 +440,8 @@ function paint(){
   });
   $("#lang").textContent = t.langbtn;
   $("#howsteps").innerHTML = t.howsteps.map(x=>`<li>${x}</li>`).join("");
-  $("#cbask").innerHTML = t.cbask + `<ol class="ask">${t.asks.map(x=>`<li>${x}</li>`).join("")}</ol>`;
+  $("#sec-ask").innerHTML = t.cbask + `<ol class="ask">${t.asks.map(x=>`<li>${x}</li>`).join("")}</ol>`;
+  $("#gnav").innerHTML = t.gnav.map(([href,lab])=>`<a href="${href}">${lab}</a>`).join("");
   $("#cbrows").innerHTML = BOOK[lang].map(([k,n,d,e])=>
     `<tr><td><b>${n}</b><br><code>${k}</code></td><td>${d}</td><td style="color:var(--muted)">${e}</td></tr>`).join("");
   renderGuide();
@@ -410,18 +453,15 @@ function paint(){
 function renderGuide(){
   const t = I18N[lang];
   const tags = (arr, y) => arr.map(k=>`<span class="tag ${y?"y":"n"}">${y?"✓":"✗"} ${k}</span>`).join("");
-  const diffs = `<h3 class="sec">${t.distitle}</h3>` + t.diffs.map(d=>
+  const diffs = `<h3 class="sec" id="sec-diff">${t.distitle}</h3>` + t.diffs.map(d=>
     `<h4 style="font-size:13px;margin:12px 0 0">${d.h}</h4><div class="diff"><div class="box">${d.a}</div><div class="box">${d.b}</div></div>`
   ).join("");
-  const donot = `<h3 class="sec">${t.donottitle}</h3><ul class="compact">${t.donot.map(x=>`<li>${x}</li>`).join("")}</ul>`;
-  const egs = `<h3 class="sec">${t.egtitle}</h3>` + t.examples.map(eg=>
+  const donot = `<h3 class="sec" id="sec-no">${t.donottitle}</h3><ul class="compact">${t.donot.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+  const egs = `<h3 class="sec" id="sec-eg">${t.egtitle}</h3>` + t.examples.map(eg=>
     `<div class="eg"><div class="q">${eg.q}</div>${tags(eg.y,true)}${tags(eg.n,false)}<p class="why">${eg.why}</p></div>`
   ).join("");
   const rules = `<h3 class="sec">${t.ruletitle}</h3><p class="note" style="margin-top:0">${t.rules}</p><p class="note">${t.flaghelp}</p>`;
   $("#cbguide").innerHTML = diffs + donot + egs + rules;
-  $("#quickbody").innerHTML = `<ol class="ask">${t.asks.map(x=>`<li>${x}</li>`).join("")}</ol>` +
-    t.diffs.map(d=>`<h4 style="font-size:13px;margin:12px 0 0">${d.h}</h4><div class="diff"><div class="box">${d.a}</div><div class="box">${d.b}</div></div>`).join("") +
-    `<p class="note">${t.flaghelp}</p>`;
 }
 
 function fillBatches(){
@@ -443,11 +483,11 @@ function renderCons(){
 
 $("#lang").onclick = ()=>{ lang = lang==="en"?"vi":"en"; localStorage.setItem("tpb_lang",lang); paint(); };
 
-$("#cb").addEventListener("toggle", ()=>{
-  if($("#cb").open){
-    cbOpened = true;
-    $("#ack").disabled = false;
-  }
+$("#gnav").addEventListener("click", e=>{
+  const a = e.target.closest("a"); if(!a) return;
+  e.preventDefault();
+  const el = document.querySelector(a.getAttribute("href"));
+  if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
 });
 
 fetch("data/manifest.json").then(r=>{
@@ -466,8 +506,9 @@ function begin(items, restore){
   S.items = items;
   if(restore){ S.ann = restore.ann||{}; S.i = Math.min(restore.i||0, items.length-1); S.started = restore.started; }
   else { S.ann = {}; S.i = 0; S.started = new Date().toISOString(); }
-  $("#setup").classList.add("hide"); $("#cb").removeAttribute("open");
+  $("#setup").classList.add("hide");
   $("#done").classList.add("hide"); $("#task").classList.remove("hide");
+  document.body.classList.add("is-task");
   $("#who").textContent = `${S.coder} · ${S.batch}`;
   render();
 }
@@ -503,15 +544,15 @@ $("#start").onclick = ()=>{
   $("#coder").classList.toggle("bad", S.coder.length>0 && !coderOk());
   if(!S.coder){ showErr(I18N[lang].need); return; }
   if(!coderOk()){ showErr(I18N[lang].coderbad); return; }
-  if(!hasSaved() && (!cbOpened || !$("#ack").checked)){
-    showErr(I18N[lang].ackneed); $("#cb").open = true; return;
+  if(!hasSaved() && !$("#ack").checked){
+    showErr(I18N[lang].ackneed); $("#ack").focus(); return;
   }
   loadBatch();
 };
 
 $("#resume").onclick = ()=>{
   if(!hasSaved()){ showErr(I18N[lang].nosaved); return; }
-  cbOpened = true; $("#ack").disabled = false; $("#ack").checked = true;
+  $("#ack").checked = true;
   loadBatch();
 };
 
@@ -543,7 +584,7 @@ $("#importfile").onchange = e=>{
         }
       });
       localStorage.setItem(key(), JSON.stringify({ann, i:Math.min((o.annotations||[]).length, 1e9), started:o.started_at||new Date().toISOString()}));
-      cbOpened = true; $("#ack").disabled = false; $("#ack").checked = true;
+      $("#ack").checked = true;
       loadBatch();
     }catch(_){ showErr(I18N[lang].importbad); }
   };
@@ -686,6 +727,7 @@ function finish(){
   $("#donesub").textContent = I18N[lang].donesub(S.items.length);
 }
 $("#another").onclick = ()=>{
+  document.body.classList.remove("is-task");
   $("#done").classList.add("hide"); $("#setup").classList.remove("hide");
 };
 
