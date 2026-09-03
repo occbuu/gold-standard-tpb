@@ -1,0 +1,101 @@
+{
+ "project": "TPB construct annotation",
+ "constructs": [
+  "ATT",
+  "SN",
+  "PBC",
+  "SAT",
+  "BI"
+ ],
+ "n_total": 599,
+ "design": {
+  "random": 300,
+  "disagreement_enriched": 300,
+  "length_bands": [
+   "15-40",
+   "40-70",
+   "70-120",
+   "120+"
+  ],
+  "reliability_set": 100
+ },
+ "batches": [
+  {
+   "batch_id": "batch_00",
+   "n": 100,
+   "shared": true,
+   "title_en": "Reliability set — everyone codes this one",
+   "title_vi": "Bộ đo độ tin cậy — tất cả người gán nhãn đều làm bộ này"
+  },
+  {
+   "batch_id": "batch_01",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 1 — assigned set",
+   "title_vi": "Đợt 1 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_02",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 2 — assigned set",
+   "title_vi": "Đợt 2 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_03",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 3 — assigned set",
+   "title_vi": "Đợt 3 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_04",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 4 — assigned set",
+   "title_vi": "Đợt 4 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_05",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 5 — assigned set",
+   "title_vi": "Đợt 5 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_06",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 6 — assigned set",
+   "title_vi": "Đợt 6 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_07",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 7 — assigned set",
+   "title_vi": "Đợt 7 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_08",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 8 — assigned set",
+   "title_vi": "Đợt 8 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_09",
+   "n": 50,
+   "shared": false,
+   "title_en": "Batch 9 — assigned set",
+   "title_vi": "Đợt 9 — bộ được phân công"
+  },
+  {
+   "batch_id": "batch_10",
+   "n": 49,
+   "shared": false,
+   "title_en": "Batch 10 — assigned set",
+   "title_vi": "Đợt 10 — bộ được phân công"
+  }
+ ]
+}
