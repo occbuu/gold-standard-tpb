@@ -260,7 +260,7 @@ ul.compact li{margin:4px 0}
 </div>
 
 <script>
-const APP_VERSION = "1.1";
+const APP_VERSION = "1.2";
 const CONS = ["ATT","SN","PBC","SAT","BI"];
 const CODER_RE = /^[A-Za-z0-9][A-Za-z0-9._-]{1,39}$/;
 const MIN_MS = 2000;
@@ -425,6 +425,29 @@ let skipGuard = false;
 const $ = s => document.querySelector(s);
 const key = () => `tpb_ann_${S.coder}_${S.batch}`;
 
+/** Quote unquoted JSON `"id": 123` so large IDs never become IEEE-754 Numbers. */
+function parseJSONKeepIds(text){
+  return JSON.parse(String(text).replace(/("id"\s*:\s*)(-?\d+)/g, '$1"$2"'));
+}
+function idStr(v){
+  if(typeof v === "string") return v;
+  if(typeof v === "bigint") return v.toString();
+  if(v == null) return "";
+  return String(v);
+}
+function normalizeItems(items){
+  return (items||[]).map(it => Object.assign({}, it, {id: idStr(it.id)}));
+}
+function normalizeAnn(ann){
+  const out = {};
+  Object.keys(ann||{}).forEach(k=>{
+    const rec = ann[k]||{};
+    const id = idStr(rec.id != null ? rec.id : k);
+    out[id] = Object.assign({}, rec, {id});
+  });
+  return out;
+}
+
 function showErr(msg){
   const el = $("#err");
   el.classList.remove("hide");
@@ -503,9 +526,12 @@ function coderOk(){
 }
 
 function begin(items, restore){
-  S.items = items;
-  if(restore){ S.ann = restore.ann||{}; S.i = Math.min(restore.i||0, items.length-1); S.started = restore.started; }
-  else { S.ann = {}; S.i = 0; S.started = new Date().toISOString(); }
+  S.items = normalizeItems(items);
+  if(restore){
+    S.ann = normalizeAnn(restore.ann||{});
+    S.i = Math.min(restore.i||0, S.items.length-1);
+    S.started = restore.started;
+  } else { S.ann = {}; S.i = 0; S.started = new Date().toISOString(); }
   $("#setup").classList.add("hide");
   $("#done").classList.add("hide"); $("#task").classList.remove("hide");
   document.body.classList.add("is-task");
@@ -523,11 +549,12 @@ function loadBatch(){
   if(!S.batch){ showErr(I18N[lang].noload); return; }
   fetch(`data/${S.batch}.json`).then(r=>{
     if(!r.ok) throw new Error();
-    return r.json();
-  }).then(b=>{
+    return r.text();
+  }).then(t=>{
+    const b = parseJSONKeepIds(t);
     if(!b || !Array.isArray(b.items) || !b.items.length) throw new Error();
     const saved = localStorage.getItem(key());
-    begin(b.items, saved ? JSON.parse(saved) : null);
+    begin(b.items, saved ? parseJSONKeepIds(saved) : null);
   }).catch(()=>{ showErr(I18N[lang].noload); });
 }
 
@@ -567,7 +594,7 @@ $("#importfile").onchange = e=>{
   const rd = new FileReader();
   rd.onload = ()=>{
     try{
-      const o = JSON.parse(rd.result);
+      const o = parseJSONKeepIds(rd.result);
       if(!validExport(o)) throw new Error("schema");
       S.coder = o.coder_id.trim(); S.batch = o.batch_id;
       $("#coder").value = S.coder;
@@ -576,11 +603,12 @@ $("#importfile").onchange = e=>{
       $("#batch").value = S.batch;
       const ann = {};
       (o.annotations||[]).forEach(a=>{
-        if(a && a.id != null){
-          const rec = {id:a.id, flag:a.flag?1:0, ms:Number(a.ms)||0, ok:1};
+        if(a && a.id != null && a.id !== ""){
+          const id = idStr(a.id);
+          const rec = {id, flag:a.flag?1:0, ms:Number(a.ms)||0, ok:1};
           CONS.forEach(c=> rec[c] = a[c]?1:0);
           if(rec.flag) CONS.forEach(c=> rec[c]=0);
-          ann[a.id]=rec;
+          ann[id]=rec;
         }
       });
       localStorage.setItem(key(), JSON.stringify({ann, i:Math.min((o.annotations||[]).length, 1e9), started:o.started_at||new Date().toISOString()}));
@@ -594,9 +622,9 @@ $("#importfile").onchange = e=>{
 
 function cur(){ return S.items[S.i]; }
 function rec(){
-  const c = cur();
-  if(!S.ann[c.id]) S.ann[c.id] = {id:c.id,ATT:0,SN:0,PBC:0,SAT:0,BI:0,flag:0,ms:0,ok:0};
-  return S.ann[c.id];
+  const id = idStr(cur().id);
+  if(!S.ann[id]) S.ann[id] = {id,ATT:0,SN:0,PBC:0,SAT:0,BI:0,flag:0,ms:0,ok:0};
+  return S.ann[id];
 }
 
 function namesOn(a){
@@ -609,7 +637,7 @@ function render(){
   $("#warn").classList.add("hide");
   $("#text").textContent = c.text;
   $("#text").scrollTop = 0;
-  const nOk = S.items.filter(it => S.ann[it.id] && S.ann[it.id].ok).length;
+  const nOk = S.items.filter(it => S.ann[idStr(it.id)] && S.ann[idStr(it.id)].ok).length;
   $("#counter").textContent = `${S.i+1} ${t.of} ${S.items.length} · ${nOk} ✓`;
   $("#prog").style.width = `${nOk/S.items.length*100}%`;
   document.querySelectorAll(".con").forEach(el=>{
@@ -697,13 +725,14 @@ function payload(){
            started_at:S.started, finished_at:new Date().toISOString(),
            n_items:S.items.length, constructs:CONS,
            annotations: S.items.map(it=> {
-             const a = S.ann[it.id] || {id:it.id,ATT:0,SN:0,PBC:0,SAT:0,BI:0,flag:0,ms:0};
-             return {id:a.id, ATT:a.ATT?1:0, SN:a.SN?1:0, PBC:a.PBC?1:0, SAT:a.SAT?1:0, BI:a.BI?1:0, flag:a.flag?1:0, ms:a.ms||0};
+             const id = idStr(it.id);
+             const a = S.ann[id] || {};
+             return {id, ATT:a.ATT?1:0, SN:a.SN?1:0, PBC:a.PBC?1:0, SAT:a.SAT?1:0, BI:a.BI?1:0, flag:a.flag?1:0, ms:a.ms||0};
            }) };
 }
 
 function nCoded(){
-  return S.items.filter(it => S.ann[it.id] && S.ann[it.id].ok).length;
+  return S.items.filter(it => S.ann[idStr(it.id)] && S.ann[idStr(it.id)].ok).length;
 }
 
 function download(){
